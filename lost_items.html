@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost Items</title>
+    <link rel="stylesheet" href="lost_items.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">L&F</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="report_lostitems.html">Report Lost</a></li>
+                <li><a href="report_founditems.html">Report Found</a></li>
+                
+                <li><button class="signout-btn" onclick="signOut()">Sign Out</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Lost Items</h2>
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search item name...">
+            <button onclick="fetchLostItems()">🔍</button>
+        </div>
+
+        <div class="items-grid" id="lostItemsList">
+            <!-- Lost items will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchLostItems() {
+            try {
+                const response = await fetch("http://localhost:5000/lost-items");
+                const lostItems = await response.json();
+                
+                const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+                const listContainer = document.getElementById("lostItemsList");
+                listContainer.innerHTML = "";
+
+                lostItems
+                    .filter(item => item.item_name.toLowerCase().includes(searchQuery))
+                    .forEach(item => {
+                        const itemCard = document.createElement("div");
+                        itemCard.classList.add("lost-item-card");
+
+                        itemCard.innerHTML = `
+                            <div class="card-header">
+                                <span class="item-initial">${item.item_name[0].toUpperCase()}</span>
+                                <div>
+                                    <p class="item-name">${item.item_name}</p>
+                                    <p class="item-date">${item.lost_date}</p>
+                                </div>
+                            </div>
+                            <div class="item-image"></div>
+                            <div class="card-content">
+                                <h3>${item.item_name}</h3>
+                                <p><strong>Location:</strong> ${item.lost_location}</p>
+                                <p>${item.description}</p>
+                                <button class="contact-btn">Contact</button>
+                            </div>
+                        `;
+                        listContainer.appendChild(itemCard);
+                    });
+
+            } catch (error) {
+                console.error("Error fetching lost items:", error);
+            }
+        }
+
+        function signOut() {
+            localStorage.removeItem("user_id"); // Remove user session
+            window.location.href = "login.html"; // Redirect to login
+        }
+
+        // Load lost items when page loads
+        window.onload = fetchLostItems;
+    </script>
+
+</body>
+</html>

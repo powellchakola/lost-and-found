@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Lost Item</title>
+    <link rel="stylesheet" href="report_lostitems.css">
+
+</head>
+<body>
+    <h2>Report Lost Item</h2>
+    <form id="reportLostForm">
+        <input type="text" name="item_name" placeholder="Item Name" required>
+        <input type="text" name="category" placeholder="Category" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="date" name="lost_date" required>
+        <input type="text" name="lost_location" placeholder="Lost Location" required>
+        <button type="submit">Report Lost Item</button>
+    </form>
+
+    <script>
+    document.getElementById("reportLostForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) {
+            alert("You need to log in first!");
+            return;
+        }
+
+        const formData = new FormData(this);
+        formData.append("user_id", user_id);
+
+        const response = await fetch("http://localhost:5000/report-lost", {
+            method: "POST",
+            body: JSON.stringify(Object.fromEntries(formData)),
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const data = await response.json();
+        alert(data.message);
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Found Item</title>
+    <link rel="stylesheet" href="report_founditems.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">L&F</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="report_lostitems.html">Report Lost</a></li>
+                <li><a href="report_founditems.html">Report Found</a></li>
+                <li><a href="login.html" class="logout-btn">Sign Out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Report Found Item</h2>
+
+        <form id="reportFoundForm">
+            <input type="hidden" name="user_id" id="user_id">
+            <input type="text" name="item_name" placeholder="Item Name" required>
+            <input type="text" name="category" placeholder="Category" required>
+            <textarea name="description" placeholder="Description" required></textarea>
+            <input type="date" name="found_date" required>
+            <input type="text" name="found_location" placeholder="Found Location" required>
+            <button type="submit">Report Found Item</button>
+        </form>
+        
+        <script>
+            document.getElementById("reportFoundForm").addEventListener("submit", async function (e) {
+                e.preventDefault();
+                
+                const user_id = localStorage.getItem("user_id"); // Get stored user ID
+                if (!user_id) {
+                    alert("You need to log in first!");
+                    return;
+                }
+            
+                // Collect form data
+                const formData = {
+                    user_id: user_id,
+                    item_name: document.querySelector('[name="item_name"]').value.trim(),
+                    category: document.querySelector('[name="category"]').value.trim(),
+                    description: document.querySelector('[name="description"]').value.trim(),
+                    found_date: document.querySelector('[name="found_date"]').value.trim(),
+                    found_location: document.querySelector('[name="found_location"]').value.trim(),
+                };
+            
+                // Check if any field is empty
+                for (const key in formData) {
+                    if (!formData[key]) {
+                        alert("All fields are required!");
+                        return;
+                    }
+                }
+            
+                try {
+                    const response = await fetch("http://localhost:5000/report-found", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(formData),
+                    });
+            
+                    const data = await response.json();
+                    alert(data.message);
+                } catch (error) {
+                    alert("Error submitting found item.");
+                }
+            });
+            </script>
+            
+</body>
+</html>
