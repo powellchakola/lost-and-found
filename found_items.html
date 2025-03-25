@@ -38,7 +38,7 @@
     <script>
         async function fetchFoundItems() {
             try {
-                const response = await fetch("http://localhost:5000/found-items");
+                const response = await fetch("https://lost-and-found-jlh9.onrender.com/found-items");
                 const foundItems = await response.json();
                 
                 const searchQuery = document.getElementById("searchInput").value.toLowerCase();
